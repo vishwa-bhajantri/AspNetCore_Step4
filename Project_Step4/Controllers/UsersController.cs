@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Project_Step4.Services;
 
 namespace Project_Step4.Controllers
 {
@@ -6,6 +7,14 @@ namespace Project_Step4.Controllers
     [Route("api/[Controller]")]
     public class UsersController : ControllerBase
     {
+
+        private readonly UserService _userService;
+        public UsersController(UserService userService)
+        {
+            _userService = userService;
+        }
+
+
         [HttpGet]
         [Route("TestUsers")]
         public async Task<IActionResult> TestUsers()
@@ -15,8 +24,8 @@ namespace Project_Step4.Controllers
         }
 
         [HttpGet]
-        [Route("GetUsers")]
-        public async Task<IActionResult> GetUsers()
+        [Route("GetUsers_Test")]
+        public async Task<IActionResult> GetUsers_Test()
         {
 
             var request = HttpContext.Request;   //Request Represents the incoming HTTP Request from the client
@@ -39,5 +48,33 @@ namespace Project_Step4.Controllers
 
             return Ok(details);
         }
+
+
+        [HttpGet]
+        [Route("GetUsers")]
+        public IActionResult GetUsers()
+        {
+            var users = _userService.GetUsers();
+
+            return Ok(users);
+        }
+
+        [HttpGet]
+        [Route("GetUsersFromExternalAPI")]
+        public async Task<IActionResult> GetUsersFromExternalAPI()
+        {
+            //var users = _userService.GetUsers();
+
+            HttpClient client = new HttpClient();
+
+            HttpResponseMessage response = await client.GetAsync("https://dummyjson.com/users");
+
+            HttpContent content = response.Content;
+
+            string result = await content.ReadAsStringAsync();
+
+            return Content(result,"application/json");
+        }
+
     }
 }
