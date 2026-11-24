@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Project_Step4.Services;
+using System.Net;
 
 namespace Project_Step4.Controllers
 {
@@ -74,6 +75,43 @@ namespace Project_Step4.Controllers
             string result = await content.ReadAsStringAsync();
 
             return Content(result,"application/json");
+        }
+
+        [HttpGet]
+        [Route("GetUsersFromLocalHost")]
+        public async Task<IActionResult> GetUsersFromLocalHost()
+        {
+            //var users = _userService.GetUsers();
+
+            HttpClient client = new HttpClient();
+
+            HttpResponseMessage response = await client.GetAsync("https://localhost:7046/api/Test/GetUsers");
+
+            HttpContent content = response.Content;
+
+            string result = await content.ReadAsStringAsync();
+
+            return Content(result, "application/json");
+        }
+
+
+        [HttpGet]
+        [Route("GetUsersFromLocalHostQuery")]
+        public async Task<IActionResult> GetUsersFromLocalHostQuery([FromQuery] int uid, [FromQuery] string uname)
+        {
+            //var users = _userService.GetUsers();
+
+            HttpClient client = new HttpClient();
+
+            string url = $"https://localhost:7046/api/Test/GetUsersByQuerry?userId={uid}&userName={uname}";
+
+            HttpResponseMessage response = await client.GetAsync(url);
+
+            HttpContent content = response.Content;
+
+            string result = await content.ReadAsStringAsync();
+
+            return Content(result, "application/json");
         }
 
     }
